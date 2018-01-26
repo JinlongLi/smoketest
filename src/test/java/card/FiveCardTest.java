@@ -264,4 +264,60 @@ public class FiveCardTest {
     dp.add(new Object[] { Hand.NO_PAIR.getRank(), "AKT82", "Ac", "2c", "8s", "Td", "Kc" });
     return dp.iterator();
   }
+
+  @Test(dataProvider = "compareHand")
+  public void compareHandTest(int expected, String hand1, String hand2) {
+    FiveCards fiveCards1 = new FiveCards(hand1);
+    FiveCards fiveCards2 = new FiveCards(hand2);
+    Assert.assertEquals(fiveCards1.compareTo(fiveCards2), expected);
+  }
+
+  @DataProvider(name = "compareHand")
+  public Iterator<Object[]> compareHandDP() {
+    int winner = 1;
+    int loser = -1;
+    int tie = 0;
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { winner, "AcKcQcJcTc", "KcQcJcTc9c" });
+    dp.add(new Object[] { winner, "AcKcQcJcTc", "AcAdAhAsKc" });
+    dp.add(new Object[] { loser, "AcKcQcJc9d", "QcJc9d2c2d" });
+    dp.add(new Object[] { tie, "AcKcQcJc9d", "AcKcQcJc9d" });
+    dp.add(new Object[] { winner, "AcKcQcJc9d", "AcKcQcJc8d" });
+    dp.add(new Object[] { loser, "AcAcQcJc9d", "Qc9c9d2c2d" });
+    dp.add(new Object[] { loser, "8c8d2c2d2h", "9c9d2c2d2h" });
+    dp.add(new Object[] { loser, "AcKcQcJc9c", "9c9d2c2d2h" });
+    dp.add(new Object[] { loser, "8c9d7s5d6h", "9c9d8c8d8h" });
+    dp.add(new Object[] { loser, "8c9d7s5d6h", "8c9d7sTd6h" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "compareSeqNew")
+  public void compareSeqNewTest(int expectedCat, String expectedSeq, String s1) {
+    FiveCards fiveCards = new FiveCards(s1);
+    Assert.assertEquals(fiveCards.getStrCompareSeq(), expectedSeq);
+    Assert.assertEquals(fiveCards.getCategory(), expectedCat);
+  }
+
+  @DataProvider(name = "compareSeqNew")
+  public Iterator<Object[]> compareSeqNewDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { Hand.STRAIGHT_FLUSH.getRank(), "A", "AcKcQcJcTc" });
+    dp.add(new Object[] { Hand.FULL_HOUSE.getRank(), "28", "8c8d2c2d2h" });
+    dp.add(new Object[] { Hand.FULL_HOUSE.getRank(), "29", "9c9d2c2d2h" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "bestFive")
+  public void bestFiveTest(int expectedCat, String expectedSeq, String s1) {
+    FiveCards fiveCards = new FiveCards(s1);
+    Assert.assertEquals(fiveCards.getStrCompareSeq(), expectedSeq);
+    Assert.assertEquals(fiveCards.getCategory(), expectedCat);
+  }
+
+  @DataProvider(name = "bestFive")
+  public Iterator<Object[]> bestFiveDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { "AcKcQcTcTd", "AcKcQcJcTcTd9s" });
+    return dp.iterator();
+  }
 }

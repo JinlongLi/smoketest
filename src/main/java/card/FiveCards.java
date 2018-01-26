@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class FiveCards {
+public class FiveCards implements Comparable<FiveCards> {
   private List<Card> cards;
   private int category;
   private int[] compareSeq;
@@ -35,7 +35,10 @@ public class FiveCards {
   }
 
   public FiveCards(List<Card> cards) {
-    this.cards = cards;
+    setCards(cards);
+    Collections.sort(this.cards);
+    setCategory();
+    setCompareSeq();
   }
 
   public FiveCards(int c1, int c2, int c3, int c4, int c5) {
@@ -49,6 +52,10 @@ public class FiveCards {
     Collections.sort(this.cards);
     setCategory();
     setCompareSeq();
+  }
+
+  public FiveCards(String str) {
+    this(str.substring(0, 2), str.substring(2, 4), str.substring(4, 6), str.substring(6, 8), str.substring(8, 10));
   }
 
   public FiveCards(String s1, String s2, String s3, String s4, String s5) {
@@ -240,5 +247,35 @@ public class FiveCards {
     }
     return (cards.get(2).getValue() == smallestVal && cards.get(3).getValue() == largestVal)
         || (cards.get(1).getValue() == smallestVal && cards.get(2).getValue() == largestVal);
+  }
+
+  public int compare(FiveCards cards1, FiveCards cards2) {
+    int retVal = 0;
+    if (cards1.getCategory() == cards2.getCategory()) {
+      for (int i = 0; i < cards1.getCompareSeq().length; i++) {
+        int cardValue1 = cards1.getCards().get(cards1.getCompareSeq()[i]).getValue();
+        int cardValue2 = cards2.getCards().get(cards2.getCompareSeq()[i]).getValue();
+        if (cardValue1 != cardValue2) {
+          retVal = cardValue1 < cardValue2 ? -1 : 1;
+          break;
+        }
+      }
+    } else {
+      retVal = cards1.getCategory() < cards2.getCategory() ? -1 : 1;
+    }
+    return retVal;
+  }
+
+  public int compareTo(FiveCards cards) {
+    return compare(this, cards);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Card card : this.cards) {
+      sb.append(card.toString());
+    }
+    return sb.toString();
   }
 }
