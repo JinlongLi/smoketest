@@ -8,9 +8,22 @@ public class FiveCards {
   private List<Card> cards;
   private int category;
   private int[] compareSeq;
+  private String strCompareSeq;
+
+  public String getStrCompareSeq() {
+    return this.strCompareSeq;
+  }
+
+  public int[] getCompareSeq() {
+    return compareSeq;
+  }
 
   public void setCompareSeq(int[] compareSeq) {
     this.compareSeq = compareSeq;
+  }
+
+  public void setStrCompareSeq(String strCompareSeq) {
+    this.strCompareSeq = strCompareSeq;
   }
 
   public List<Card> getCards() {
@@ -76,13 +89,12 @@ public class FiveCards {
   }
 
   private void setCompareSeq() {
-    String fullSeq = "";
-    for (int i = 4; i >= 0; i--) {
-      fullSeq += cards.get(i).getValueAsString();
-    }
-
-    if (isStraight()) {
-      setCompareSeq(new int[] { 4 });
+    if (isStraight() || isStraightFlush()) {
+      if (cards.get(0).getValue() == 0 && cards.get(4).getValue() == 12) {
+        setCompareSeq(new int[] { 3 });
+      } else {
+        setCompareSeq(new int[] { 4 });
+      }
     } else if (is4OfKinds()) {
       if (cards.get(0).getValue() != cards.get(1).getValue()) {
         setCompareSeq(new int[] { 1, 0 });
@@ -95,7 +107,7 @@ public class FiveCards {
       } else {
         setCompareSeq(new int[] { 2, 3 });
       }
-    } else if (isFlush() && !isStraight()) {
+    } else if (isFlush()) {
       setCompareSeq(new int[] { 4, 3, 2, 1, 0 });
     } else if (hasSet()) {
       if (cards.get(2).getValue() == cards.get(0).getValue()) {
@@ -130,6 +142,12 @@ public class FiveCards {
     } else {
       throw new IllegalArgumentException("Cannot set the compareSeq.");
     }
+
+    StringBuilder sb = new StringBuilder();
+    for (int index : this.compareSeq) {
+      sb.append(cards.get(index).getValueAsString());
+    }
+    setStrCompareSeq(sb.toString());
   }
 
   public boolean hasSet() {
