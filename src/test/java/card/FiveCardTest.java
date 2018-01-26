@@ -93,8 +93,8 @@ public class FiveCardTest {
   }
 
   @Test(dataProvider = "fourOfKinds")
-  public void fourOfKindsTest(boolean is4OfKinds, int c1, int c2, int c3, int c4, int c5) {
-    FiveCards fiveCards = new FiveCards(c1, c2, c3, c4, c5);
+  public void fourOfKindsTest(boolean is4OfKinds, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
     if (is4OfKinds) {
       Assert.assertTrue(fiveCards.is4OfKinds());
     } else {
@@ -105,11 +105,11 @@ public class FiveCardTest {
   @DataProvider(name = "fourOfKinds")
   public Iterator<Object[]> isFourOfKindsDP() {
     List<Object[]> dp = new ArrayList<Object[]>();
-    for (int i = 0; i < 13; i++) {
-      dp.add(new Object[] { true, i, i + 1, i + 13, i + 26, i + 39 });
-      dp.add(new Object[] { false, i, i + 1, i + 13, i + 26, i + 38 });
-      dp.add(new Object[] { false, i, i + 1, i + 12, i + 26, i + 38 });
-    }
+    dp.add(new Object[] { true, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "4c", "4d", "4h", "3s", "3d" });
+    dp.add(new Object[] { true, "Tc", "Td", "Ts", "Th", "3d" });
+    dp.add(new Object[] { false, "2c", "4d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "4d", "5h", "3s", "3d" });
     return dp.iterator();
   }
 
@@ -135,6 +135,106 @@ public class FiveCardTest {
     dp.add(new Object[] { false, "2c", "4d", "2h", "3s", "3d" });
     dp.add(new Object[] { false, "2c", "4d", "5h", "3s", "3d" });
 
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasSet")
+  public void hasSetTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasSet());
+    } else {
+      Assert.assertFalse(fiveCards.hasSet());
+    }
+  }
+
+  @DataProvider(name = "hasSet")
+  public Iterator<Object[]> hasSetDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "2h", "3s", "4d" });
+    dp.add(new Object[] { true, "4c", "4d", "4h", "3s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "Th", "3d" });
+    dp.add(new Object[] { true, "Ac", "Ad", "Ks", "Ah", "3d" });
+    dp.add(new Object[] { true, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasTwoPairs")
+  public void hasTwoPairsTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasTwoPairs());
+    } else {
+      Assert.assertFalse(fiveCards.hasTwoPairs());
+    }
+  }
+
+  @DataProvider(name = "hasTwoPairs")
+  public Iterator<Object[]> hasTwoPairsDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "Ah", "3s", "3d" });
+    dp.add(new Object[] { true, "4c", "4d", "3h", "3s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "3h", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasOnePair")
+  public void hasOnePairTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasOnePair());
+    } else {
+      Assert.assertFalse(fiveCards.hasOnePair());
+    }
+  }
+
+  @DataProvider(name = "hasOnePair")
+  public Iterator<Object[]> hasOnePairDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "Ah", "3s", "4d" });
+    dp.add(new Object[] { true, "4c", "4d", "3h", "6s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasNoPair")
+  public void hasNoPairTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasNoPair());
+    } else {
+      Assert.assertFalse(fiveCards.hasNoPair());
+    }
+  }
+
+  @DataProvider(name = "hasNoPair")
+  public Iterator<Object[]> hasNoPairDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { false, "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2c", "5c", "4c", "3c" });
+    dp.add(new Object[] { false, "Ac", "2c", "8c", "4c", "Kc" });
+    dp.add(new Object[] { true, "Ac", "2c", "8s", "4c", "Kc" });
+    dp.add(new Object[] { true, "Ac", "2c", "8s", "Td", "Kc" });
     return dp.iterator();
   }
 }

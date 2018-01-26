@@ -6,6 +6,12 @@ import java.util.List;
 
 public class FiveCards {
   private List<Card> cards;
+  private int category;
+  private int[] compareSeq;
+
+  public void setCompareSeq(int[] compareSeq) {
+    this.compareSeq = compareSeq;
+  }
 
   public List<Card> getCards() {
     return cards;
@@ -26,7 +32,10 @@ public class FiveCards {
     cards.add(new Card(c3));
     cards.add(new Card(c4));
     cards.add(new Card(c5));
-    this.cards = cards;
+    setCards(cards);
+    Collections.sort(this.cards);
+    setCategory();
+    setCompareSeq();
   }
 
   public FiveCards(String s1, String s2, String s3, String s4, String s5) {
@@ -36,47 +45,131 @@ public class FiveCards {
     cards.add(new Card(s3));
     cards.add(new Card(s4));
     cards.add(new Card(s5));
-    this.cards = cards;
+    setCards(cards);
+    Collections.sort(this.cards);
+    setCategory();
+    setCompareSeq();
   }
 
-  public int getRank() {
+  private void setCategory() {
     if (isStraightFlush()) {
-      return FiveCardCategory.STRAIGHT_FLUSH.getRank();
+      this.category = Hand.STRAIGHT_FLUSH.getRank();
     } else if (is4OfKinds()) {
-      return FiveCardCategory.FOUR_KINDS.getRank();
+      this.category = Hand.FOUR_KINDS.getRank();
     } else if (isFullHouse()) {
-      return FiveCardCategory.FULL_HOUSE.getRank();
+      this.category = Hand.FULL_HOUSE.getRank();
     } else if (isFlush()) {
-      return FiveCardCategory.FLUSH.getRank();
+      this.category = Hand.FLUSH.getRank();
     } else if (isStraight()) {
-      return FiveCardCategory.STRAIGHT.getRank();
-    } else if (isSet()) {
-      return FiveCardCategory.SET.getRank();
-    } else if (isTwoPairs()) {
-      return FiveCardCategory.TWO_PAIRS.getRank();
-    } else if (isOnePair()) {
-      return FiveCardCategory.ONE_PAIR.getRank();
-    } else if (isNoPair()) {
-      return FiveCardCategory.NO_PAIR.getRank();
+      this.category = Hand.STRAIGHT.getRank();
+    } else if (hasSet()) {
+      this.category = Hand.SET.getRank();
+    } else if (hasTwoPairs()) {
+      this.category = Hand.TWO_PAIRS.getRank();
+    } else if (hasOnePair()) {
+      this.category = Hand.ONE_PAIR.getRank();
+    } else if (hasNoPair()) {
+      this.category = Hand.NO_PAIR.getRank();
     } else {
-      return -1;
+      throw new IllegalArgumentException("Cannot set the category.");
     }
   }
 
-  public boolean isSet() {
-    return true;
+  private void setCompareSeq() {
+    String fullSeq = "";
+    for (int i = 4; i >= 0; i--) {
+      fullSeq += cards.get(i).getValueAsString();
+    }
+
+    if (isStraight()) {
+      setCompareSeq(new int[] { 4 });
+    } else if (is4OfKinds()) {
+      if (cards.get(0).getValue() != cards.get(1).getValue()) {
+        setCompareSeq(new int[] { 1, 0 });
+      } else {
+        setCompareSeq(new int[] { 0, 4 });
+      }
+    } else if (isFullHouse()) {
+      if (cards.get(1).getValue() != cards.get(2).getValue()) {
+        setCompareSeq(new int[] { 2, 1 });
+      } else {
+        setCompareSeq(new int[] { 2, 3 });
+      }
+    } else if (isFlush() && !isStraight()) {
+      setCompareSeq(new int[] { 4, 3, 2, 1, 0 });
+    } else if (hasSet()) {
+      if (cards.get(2).getValue() == cards.get(0).getValue()) {
+        setCompareSeq(new int[] { 0, 4, 3 });
+      } else if (cards.get(1).getValue() == cards.get(3).getValue()) {
+        setCompareSeq(new int[] { 1, 4, 0 });
+      } else {
+        setCompareSeq(new int[] { 4, 2, 1 });
+      }
+    } else if (hasTwoPairs()) {
+      if (cards.get(0).getValue() == cards.get(1).getValue() && cards.get(2).getValue() == cards.get(3).getValue()) {
+        setCompareSeq(new int[] { 2, 0, 4 });
+      } else if (cards.get(0).getValue() == cards.get(1).getValue()
+          && cards.get(3).getValue() == cards.get(4).getValue()) {
+        setCompareSeq(new int[] { 3, 0, 2 });
+      } else if (cards.get(1).getValue() == cards.get(2).getValue()
+          && cards.get(3).getValue() == cards.get(4).getValue()) {
+        setCompareSeq(new int[] { 3, 1, 0 });
+      }
+    } else if (hasOnePair()) {
+      if (cards.get(0).getValue() == cards.get(1).getValue()) {
+        setCompareSeq(new int[] { 0, 4, 3, 2 });
+      } else if (cards.get(1).getValue() == cards.get(2).getValue()) {
+        setCompareSeq(new int[] { 1, 4, 3, 0 });
+      } else if (cards.get(2).getValue() == cards.get(3).getValue()) {
+        setCompareSeq(new int[] { 2, 4, 1, 0 });
+      } else if (cards.get(3).getValue() == cards.get(4).getValue()) {
+        setCompareSeq(new int[] { 3, 2, 1, 0 });
+      }
+    } else if (hasNoPair()) {
+      setCompareSeq(new int[] { 4, 3, 2, 1, 0 });
+    } else {
+      throw new IllegalArgumentException("Cannot set the compareSeq.");
+    }
   }
 
-  public boolean isTwoPairs() {
-    return true;
+  public boolean hasSet() {
+    final int smallestVal = cards.get(0).getValue();
+    final int largestVal = cards.get(4).getValue();
+    if (smallestVal == largestVal) {
+      throw new IllegalArgumentException("Illegal playing five cards: 5 of kinds!");
+    }
+    if (is4OfKinds() || isFullHouse()) {
+      return false;
+    }
+
+    return (cards.get(2).getValue() == smallestVal && cards.get(3).getValue() != largestVal)
+        || (cards.get(1).getValue() != smallestVal && cards.get(2).getValue() == largestVal)
+        || cards.get(1).getValue() == cards.get(3).getValue();
   }
 
-  public boolean isOnePair() {
-    return true;
+  public boolean hasTwoPairs() {
+    if (is4OfKinds() || isFullHouse() || hasSet()) {
+      return false;
+    }
+    return (cards.get(0).getValue() == cards.get(1).getValue() && cards.get(2).getValue() == cards.get(3).getValue())
+        || (cards.get(0).getValue() == cards.get(1).getValue() && cards.get(3).getValue() == cards.get(4).getValue())
+        || (cards.get(1).getValue() == cards.get(2).getValue() && cards.get(3).getValue() == cards.get(4).getValue());
   }
 
-  public boolean isNoPair() {
-    return true;
+  public boolean hasOnePair() {
+    if (is4OfKinds() || isFullHouse() || hasSet() || hasTwoPairs()) {
+      return false;
+    }
+    return cards.get(0).getValue() == cards.get(1).getValue() || cards.get(1).getValue() == cards.get(2).getValue()
+        || cards.get(2).getValue() == cards.get(3).getValue() || cards.get(3).getValue() == cards.get(4).getValue();
+  }
+
+  public boolean hasNoPair() {
+    if (isStraight() || isFlush()) {
+      return false;
+    }
+    return cards.get(0).getValue() != cards.get(1).getValue() && cards.get(1).getValue() != cards.get(2).getValue()
+        && cards.get(2).getValue() != cards.get(3).getValue() && cards.get(3).getValue() != cards.get(4).getValue();
   }
 
   public boolean isStraightFlush() {
@@ -84,12 +177,24 @@ public class FiveCards {
   }
 
   public boolean isFlush() {
-    return cards.get(0).getSuit() == cards.get(1).getSuit() && cards.get(0).getSuit() == cards.get(2).getSuit()
-        && cards.get(0).getSuit() == cards.get(3).getSuit() && cards.get(0).getSuit() == cards.get(4).getSuit();
+    boolean isF = false;
+    if (cards.get(0).getSuit() == cards.get(1).getSuit() && cards.get(0).getSuit() == cards.get(2).getSuit()
+        && cards.get(0).getSuit() == cards.get(3).getSuit() && cards.get(0).getSuit() == cards.get(4).getSuit()) {
+      isF = true;
+
+    }
+    return isF;
+  }
+
+  public int getCategory() {
+    return category;
+  }
+
+  public void setCategory(int category) {
+    this.category = category;
   }
 
   public boolean isStraight() {
-    Collections.sort(cards);
     final int smallestVal = cards.get(0).getValue();
     final int largestVal = cards.get(4).getValue();
     boolean isS = false;
@@ -104,25 +209,18 @@ public class FiveCards {
   }
 
   public boolean is4OfKinds() {
-    Collections.sort(cards);
     final int smallestVal = cards.get(0).getValue();
     final int largestVal = cards.get(4).getValue();
-    return (cards.get(1).getValue() == smallestVal && cards.get(2).getValue() == smallestVal
-        && cards.get(3).getValue() == smallestVal)
-        || (cards.get(1).getValue() == largestVal && cards.get(2).getValue() == largestVal
-            && cards.get(3).getValue() == largestVal);
+    return smallestVal == cards.get(3).getValue() || cards.get(1).getValue() == largestVal;
   }
 
   public boolean isFullHouse() {
-    Collections.sort(cards);
     final int smallestVal = cards.get(0).getValue();
     final int largestVal = cards.get(4).getValue();
     if (smallestVal == largestVal) {
       throw new IllegalArgumentException("Illegal playing five cards: 5 of kinds!");
     }
-    return (cards.get(1).getValue() == smallestVal && cards.get(2).getValue() == smallestVal
-        && cards.get(3).getValue() == largestVal)
-        || (cards.get(1).getValue() == smallestVal && cards.get(2).getValue() == largestVal
-            && cards.get(3).getValue() == largestVal);
+    return (cards.get(2).getValue() == smallestVal && cards.get(3).getValue() == largestVal)
+        || (cards.get(1).getValue() == smallestVal && cards.get(2).getValue() == largestVal);
   }
 }
