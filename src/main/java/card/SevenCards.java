@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.testng.Assert;
-
-public class SevenCards {
+public class SevenCards implements Comparable<SevenCards> {
   private ArrayList<Card> cards = new ArrayList<Card>();
   private FiveCards bestFiveCards;
   ArrayList<FiveCards> allFiveCards = new ArrayList<FiveCards>();
@@ -20,7 +18,6 @@ public class SevenCards {
   }
 
   public SevenCards(String str) {
-    Assert.assertEquals(str.length(), 14);
     for (int i = 0; i < str.length(); i += 2) {
       String subStr = str.substring(i, i + 2);
       this.cards.add(new Card(subStr));
@@ -59,5 +56,23 @@ public class SevenCards {
       dfs(cards, k, i + 1, item, res);
       item.remove(item.size() - 1);
     }
+  }
+
+  public int compare(SevenCards card1, SevenCards card2) {
+    return this.getBestFiveCards().compareTo(card2.getBestFiveCards());
+  }
+
+  @Override
+  public int compareTo(SevenCards cards) {
+    return compare(this, cards);
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder sb = new StringBuilder();
+    for (Card card : this.cards) {
+      sb.append(card.toString());
+    }
+    return sb.toString();
   }
 }

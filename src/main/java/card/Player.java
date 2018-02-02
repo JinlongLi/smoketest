@@ -15,7 +15,8 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Hand {
-  private Player player;
-  private HoleCards holeCards;
+public class Player {
+  private String lastName;
+  private String firstName;
+
 }

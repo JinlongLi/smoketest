@@ -249,19 +249,19 @@ public class FiveCardTest {
   @DataProvider(name = "compareSeq")
   public Iterator<Object[]> compareSeqDP() {
     List<Object[]> dp = new ArrayList<Object[]>();
-    dp.add(new Object[] { Hand.STRAIGHT_FLUSH.getRank(), "A", "Ac", "Kc", "Tc", "Jc", "Qc" });
-    dp.add(new Object[] { Hand.STRAIGHT_FLUSH.getRank(), "5", "Ac", "2c", "5c", "4c", "3c" });
-    dp.add(new Object[] { Hand.FOUR_KINDS.getRank(), "23", "2c", "2d", "2h", "2s", "3d" });
-    dp.add(new Object[] { Hand.FULL_HOUSE.getRank(), "23", "2c", "2d", "2h", "3s", "3d" });
-    dp.add(new Object[] { Hand.FLUSH.getRank(), "AK842", "Ac", "2c", "8c", "4c", "Kc" });
-    dp.add(new Object[] { Hand.STRAIGHT.getRank(), "6", "6c", "2d", "5h", "4s", "3d" });
-    dp.add(new Object[] { Hand.STRAIGHT.getRank(), "A", "Ac", "Kd", "Th", "Js", "Qd" });
-    dp.add(new Object[] { Hand.STRAIGHT.getRank(), "5", "Ac", "2c", "3h", "5d", "4s" });
-    dp.add(new Object[] { Hand.SET.getRank(), "3Q2", "3c", "3d", "3h", "2s", "Qd" });
-    dp.add(new Object[] { Hand.TWO_PAIRS.getRank(), "425", "2c", "2d", "5h", "4s", "4d" });
-    dp.add(new Object[] { Hand.ONE_PAIR.getRank(), "TAQ3", "Tc", "Td", "As", "Qh", "3d" });
-    dp.add(new Object[] { Hand.NO_PAIR.getRank(), "AK842", "Ac", "2c", "8s", "4c", "Kc" });
-    dp.add(new Object[] { Hand.NO_PAIR.getRank(), "AKT82", "Ac", "2c", "8s", "Td", "Kc" });
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "A", "Ac", "Kc", "Tc", "Jc", "Qc" });
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "5", "Ac", "2c", "5c", "4c", "3c" });
+    dp.add(new Object[] { PokerRank.FOUR_KINDS.getRank(), "23", "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "23", "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { PokerRank.FLUSH.getRank(), "AK842", "Ac", "2c", "8c", "4c", "Kc" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "6", "6c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "A", "Ac", "Kd", "Th", "Js", "Qd" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "5", "Ac", "2c", "3h", "5d", "4s" });
+    dp.add(new Object[] { PokerRank.SET.getRank(), "3Q2", "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { PokerRank.TWO_PAIRS.getRank(), "425", "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { PokerRank.ONE_PAIR.getRank(), "TAQ3", "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { PokerRank.NO_PAIR.getRank(), "AK842", "Ac", "2c", "8s", "4c", "Kc" });
+    dp.add(new Object[] { PokerRank.NO_PAIR.getRank(), "AKT82", "Ac", "2c", "8s", "Td", "Kc" });
     return dp.iterator();
   }
 
@@ -301,9 +301,9 @@ public class FiveCardTest {
   @DataProvider(name = "compareSeqNew")
   public Iterator<Object[]> compareSeqNewDP() {
     List<Object[]> dp = new ArrayList<Object[]>();
-    dp.add(new Object[] { Hand.STRAIGHT_FLUSH.getRank(), "A", "AcKcQcJcTc" });
-    dp.add(new Object[] { Hand.FULL_HOUSE.getRank(), "28", "8c8d2c2d2h" });
-    dp.add(new Object[] { Hand.FULL_HOUSE.getRank(), "29", "9c9d2c2d2h" });
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "A", "AcKcQcJcTc" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "28", "8c8d2c2d2h" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "29", "9c9d2c2d2h" });
     return dp.iterator();
   }
 

@@ -73,23 +73,23 @@ public class FiveCards implements Comparable<FiveCards> {
 
   private void setCategory() {
     if (isStraightFlush()) {
-      this.category = Hand.STRAIGHT_FLUSH.getRank();
+      this.category = PokerRank.STRAIGHT_FLUSH.getRank();
     } else if (is4OfKinds()) {
-      this.category = Hand.FOUR_KINDS.getRank();
+      this.category = PokerRank.FOUR_KINDS.getRank();
     } else if (isFullHouse()) {
-      this.category = Hand.FULL_HOUSE.getRank();
+      this.category = PokerRank.FULL_HOUSE.getRank();
     } else if (isFlush()) {
-      this.category = Hand.FLUSH.getRank();
+      this.category = PokerRank.FLUSH.getRank();
     } else if (isStraight()) {
-      this.category = Hand.STRAIGHT.getRank();
+      this.category = PokerRank.STRAIGHT.getRank();
     } else if (hasSet()) {
-      this.category = Hand.SET.getRank();
+      this.category = PokerRank.SET.getRank();
     } else if (hasTwoPairs()) {
-      this.category = Hand.TWO_PAIRS.getRank();
+      this.category = PokerRank.TWO_PAIRS.getRank();
     } else if (hasOnePair()) {
-      this.category = Hand.ONE_PAIR.getRank();
+      this.category = PokerRank.ONE_PAIR.getRank();
     } else if (hasNoPair()) {
-      this.category = Hand.NO_PAIR.getRank();
+      this.category = PokerRank.NO_PAIR.getRank();
     } else {
       throw new IllegalArgumentException("Cannot set the category.");
     }
@@ -266,6 +266,7 @@ public class FiveCards implements Comparable<FiveCards> {
     return retVal;
   }
 
+  @Override
   public int compareTo(FiveCards cards) {
     return compare(this, cards);
   }
@@ -277,5 +278,9 @@ public class FiveCards implements Comparable<FiveCards> {
       sb.append(card.toString());
     }
     return sb.toString();
+  }
+
+  public boolean equals(FiveCards cards) {
+    return this.compareTo(cards) == 0;
   }
 }
