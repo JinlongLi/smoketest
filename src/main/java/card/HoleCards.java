@@ -22,4 +22,19 @@ public class HoleCards {
     }
     return sb.toString();
   }
+
+  public String toNormalString() {
+    Card card1 = cards.get(0);
+    Card card2 = cards.get(1);
+    StringBuilder sb = new StringBuilder();
+    if (card1.getValue() == card2.getValue()) { // pair
+      sb.append(card1.getValueAsString()).append(card1.getValueAsString());
+    } else if (card1.getSuit() == card2.getSuit()) { // suited
+      sb.append(card1.getValueAsString()).append(card2.getValueAsString()).append("s");
+    } else {
+      sb.append(card1.getValueAsString()).append(card2.getValueAsString()).append("o");
+    }
+
+    return sb.toString();
+  }
 }

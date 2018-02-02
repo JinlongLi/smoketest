@@ -14,22 +14,55 @@ public class Hello {
 
   public static void main(String[] args) {
     Map<String, Integer> map = new HashMap<>();
-    int hands = 100000;
+    Map<String, Integer> mapLoser = new HashMap<>();
+    int hands = 200000;
     for (int i = 0; i < hands; i++) {
-      List<HoleCards> winningCards = play();
+      List<ArrayList<HoleCards>> cardStatus = play();
+      List<HoleCards> winningCards = cardStatus.get(0);
+
       for (HoleCards holeCard : winningCards) {
-        if (map.containsKey(holeCard.toString())) {
-          map.put(holeCard.toString(), map.get(holeCard.toString()) + 1);
+        String normalString = holeCard.toNormalString();
+        if (map.containsKey(normalString)) {
+          map.put(normalString, map.get(normalString) + 1);
         } else {
-          map.put(holeCard.toString(), 1);
+          map.put(normalString, 1);
         }
       }
+
+      List<HoleCards> loserCards = cardStatus.get(1);
+      for (HoleCards holeCard : loserCards) {
+        String normalString = holeCard.toNormalString();
+        if (mapLoser.containsKey(normalString)) {
+          mapLoser.put(normalString, mapLoser.get(normalString) + 1);
+        } else {
+          mapLoser.put(normalString, 1);
+        }
+      }
+
     }
-    Map<String, Integer> sortedMap = sortByValue(map);
-    printMap(sortedMap);
+
+    Map<String, Double> winningRate = new HashMap<>();
+    Map<String, Integer> frequency = new HashMap<>();
+    for (Map.Entry<String, Integer> entry : map.entrySet()) {
+      int winning = entry.getValue();
+      String key = entry.getKey();
+      int losing = mapLoser.get(key);
+      int total = winning + losing;
+      frequency.put(key, total);
+      double rate = (double) winning / (double) total;
+      winningRate.put(key, rate);
+    }
+
+    Map<String, Double> sortedMapRate = sortByDoubleValue(winningRate);
+    System.out.println("Hole cards winner rate: ");
+    printMap(sortedMapRate);
+
+    Map<String, Integer> sortedMapFrequency = sortByValue(frequency);
+    System.out.println("Hole cards frequency: ");
+    printMap(sortedMapFrequency);
   }
 
-  public static List<HoleCards> play() {
+  public static List<ArrayList<HoleCards>> play() {
     StringBuilder sb = new StringBuilder();
     List<Card> shuffledDeck = getShuffledDeck();
     List<Card> pool = new ArrayList<Card>();
@@ -63,25 +96,34 @@ public class Hello {
 
     // find the winner
     Collections.sort(all7CardsHand, Collections.reverseOrder());
-    List<Integer> winner = new ArrayList<>();
-    winner.add(map.get(all7CardsHand.get(0)));
+    List<Integer> winners = new ArrayList<>();
+    List<Integer> losers = new ArrayList<>();
+    winners.add(map.get(all7CardsHand.get(0)));
     FiveCards bestFiveCards = all7CardsHand.get(0).getBestFiveCards();
     sb.append(bestFiveCards + ":" + bestFiveCards.getCategory() + ":");
     for (int i = 1; i < 9; i++) {
       if (all7CardsHand.get(i).getBestFiveCards().equals(bestFiveCards)) {
-        winner.add(map.get(all7CardsHand.get(i)));
+        winners.add(map.get(all7CardsHand.get(i)));
       } else {
-        break;
+        losers.add(map.get(all7CardsHand.get(i)));
       }
     }
 
-    List<HoleCards> winnerCards = new ArrayList<>();
-    for (int index : winner) {
+    ArrayList<HoleCards> winnerCards = new ArrayList<>();
+    for (int index : winners) {
       winnerCards.add(playerHands.get(index));
-      // System.out.println(playerHands.get(index) + ":" + sb.toString());
     }
 
-    return winnerCards;
+    ArrayList<HoleCards> loserCards = new ArrayList<>();
+    for (int index : losers) {
+      loserCards.add(playerHands.get(index));
+    }
+
+    List<ArrayList<HoleCards>> cardsStatus = new ArrayList<ArrayList<HoleCards>>();
+    cardsStatus.add(winnerCards);
+    cardsStatus.add(loserCards);
+
+    return cardsStatus;
   }
 
   public static ArrayList<Card> getShuffledDeck() {
@@ -94,31 +136,32 @@ public class Hello {
   }
 
   private static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
-
-    // 1. Convert Map to List of Map
     List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-
-    // 2. Sort list with Collections.sort(), provide a custom Comparator
-    // Try switch the o1 o2 position for a different order
     Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
       @Override
       public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
         return (o1.getValue()).compareTo(o2.getValue());
       }
     });
-
-    // 3. Loop the sorted list and put it into a new insertion order Map LinkedHashMap
     Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
     for (Map.Entry<String, Integer> entry : list) {
       sortedMap.put(entry.getKey(), entry.getValue());
     }
+    return sortedMap;
+  }
 
-    /*
-     * //classic iterator example for (Iterator<Map.Entry<String, Integer>> it = list.iterator();
-     * it.hasNext(); ) { Map.Entry<String, Integer> entry = it.next(); sortedMap.put(entry.getKey(),
-     * entry.getValue()); }
-     */
-
+  private static Map<String, Double> sortByDoubleValue(Map<String, Double> unsortMap) {
+    List<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
+    Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+      @Override
+      public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
+        return (o2.getValue()).compareTo(o1.getValue());
+      }
+    });
+    Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
+    for (Map.Entry<String, Double> entry : list) {
+      sortedMap.put(entry.getKey(), entry.getValue());
+    }
     return sortedMap;
   }
 
