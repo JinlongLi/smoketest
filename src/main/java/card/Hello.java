@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,7 @@ public class Hello {
   public static void main(String[] args) {
     Map<String, Integer> map = new HashMap<>();
     Map<String, Integer> mapLoser = new HashMap<>();
-    int hands = 200000;
+    int hands = 10000;
     for (int i = 0; i < hands; i++) {
       List<ArrayList<HoleCards>> cardStatus = play();
       List<HoleCards> winningCards = cardStatus.get(0);
@@ -46,18 +45,18 @@ public class Hello {
     for (Map.Entry<String, Integer> entry : map.entrySet()) {
       int winning = entry.getValue();
       String key = entry.getKey();
-      int losing = mapLoser.get(key);
+      int losing = mapLoser.containsKey(key) ? mapLoser.get(key) : 0;
       int total = winning + losing;
       frequency.put(key, total);
       double rate = (double) winning / (double) total;
       winningRate.put(key, rate);
     }
 
-    Map<String, Double> sortedMapRate = sortByDoubleValue(winningRate);
+    List<Map.Entry<String, Double>> sortedMapRate = sortByDoubleValue(winningRate);
     System.out.println("Hole cards winner rate: ");
     printMap(sortedMapRate);
 
-    Map<String, Integer> sortedMapFrequency = sortByValue(frequency);
+    List<Map.Entry<String, Integer>> sortedMapFrequency = sortByValue(frequency);
     System.out.println("Hole cards frequency: ");
     printMap(sortedMapFrequency);
   }
@@ -135,38 +134,38 @@ public class Hello {
     return deck;
   }
 
-  private static Map<String, Integer> sortByValue(Map<String, Integer> unsortMap) {
-    List<Map.Entry<String, Integer>> list = new LinkedList<Map.Entry<String, Integer>>(unsortMap.entrySet());
-    Collections.sort(list, new Comparator<Map.Entry<String, Integer>>() {
+  private static <K, V> List<Map.Entry<K, V>> sort(Map<K, V> unsortMap, Comparator<Map.Entry<K, V>> comparator) {
+    List<Map.Entry<K, V>> list = new LinkedList<Map.Entry<K, V>>(unsortMap.entrySet());
+    Collections.sort(list, comparator);
+    // Map<K, V> sortedMap = new LinkedHashMap<K, V>();
+    // for (Map.Entry<K, V> entry : list) {
+    // sortedMap.put(entry.getKey(), entry.getValue());
+    // }
+    return list;
+  }
+
+  private static List<Map.Entry<String, Integer>> sortByValue(Map<String, Integer> unsortMap) {
+    Comparator<Map.Entry<String, Integer>> comparator = new Comparator<Map.Entry<String, Integer>>() {
       @Override
       public int compare(Map.Entry<String, Integer> o1, Map.Entry<String, Integer> o2) {
         return (o1.getValue()).compareTo(o2.getValue());
       }
-    });
-    Map<String, Integer> sortedMap = new LinkedHashMap<String, Integer>();
-    for (Map.Entry<String, Integer> entry : list) {
-      sortedMap.put(entry.getKey(), entry.getValue());
-    }
-    return sortedMap;
+    };
+    return sort(unsortMap, comparator);
   }
 
-  private static Map<String, Double> sortByDoubleValue(Map<String, Double> unsortMap) {
-    List<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());
-    Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+  private static List<Map.Entry<String, Double>> sortByDoubleValue(Map<String, Double> unsortMap) {
+    Comparator<Map.Entry<String, Double>> comparator = new Comparator<Map.Entry<String, Double>>() {
       @Override
       public int compare(Map.Entry<String, Double> o1, Map.Entry<String, Double> o2) {
         return (o2.getValue()).compareTo(o1.getValue());
       }
-    });
-    Map<String, Double> sortedMap = new LinkedHashMap<String, Double>();
-    for (Map.Entry<String, Double> entry : list) {
-      sortedMap.put(entry.getKey(), entry.getValue());
-    }
-    return sortedMap;
+    };
+    return sort(unsortMap, comparator);
   }
 
-  public static <K, V> void printMap(Map<K, V> map) {
-    for (Map.Entry<K, V> entry : map.entrySet()) {
+  public static <K, V> void printMap(List<Map.Entry<K, V>> list) {
+    for (Map.Entry<K, V> entry : list) {
       System.out.println(entry.getKey() + ":" + entry.getValue());
     }
   }
