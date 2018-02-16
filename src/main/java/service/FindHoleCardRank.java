@@ -1,4 +1,4 @@
-package card;
+package service;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,48 +8,44 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class Hello {
+import card.Card;
+import card.FiveCards;
+import card.HoleCards;
+import card.SevenCards;
+
+public class FindHoleCardRank {
   public static final int DECK_SIZE = 52;
 
   public static void main(String[] args) {
-    Map<String, Integer> map = new HashMap<>();
-    Map<String, Integer> mapLoser = new HashMap<>();
-    int hands = 10000;
+    findHoleCardRank(1000);
+  }
+
+  public static void findHoleCardRank(int hands) {
+    Map<String, Stat> statMap = new HashMap<>();
+
     for (int i = 0; i < hands; i++) {
       List<ArrayList<HoleCards>> cardStatus = play();
-      List<HoleCards> winningCards = cardStatus.get(0);
-
-      for (HoleCards holeCard : winningCards) {
-        String normalString = holeCard.toNormalString();
-        if (map.containsKey(normalString)) {
-          map.put(normalString, map.get(normalString) + 1);
-        } else {
-          map.put(normalString, 1);
+      for (int j = 0; j < cardStatus.size(); j++) {
+        for (HoleCards holeCard : cardStatus.get(j)) {
+          final String normalString = holeCard.toNormalString();
+          if (!statMap.containsKey(normalString)) {
+            statMap.put(normalString, new Stat());
+          }
+          boolean won = j == 0 ? true : false;
+          statMap.get(normalString).recount(won);
         }
       }
-
-      List<HoleCards> loserCards = cardStatus.get(1);
-      for (HoleCards holeCard : loserCards) {
-        String normalString = holeCard.toNormalString();
-        if (mapLoser.containsKey(normalString)) {
-          mapLoser.put(normalString, mapLoser.get(normalString) + 1);
-        } else {
-          mapLoser.put(normalString, 1);
-        }
-      }
-
     }
 
     Map<String, Double> winningRate = new HashMap<>();
     Map<String, Integer> frequency = new HashMap<>();
-    for (Map.Entry<String, Integer> entry : map.entrySet()) {
-      int winning = entry.getValue();
-      String key = entry.getKey();
-      int losing = mapLoser.containsKey(key) ? mapLoser.get(key) : 0;
+    for (Map.Entry<String, Stat> entry : statMap.entrySet()) {
+      int winning = entry.getValue().getWinningCount();
+      int losing = entry.getValue().getLosingCount();
       int total = winning + losing;
-      frequency.put(key, total);
+      frequency.put(entry.getKey(), total);
       double rate = (double) winning / (double) total;
-      winningRate.put(key, rate);
+      winningRate.put(entry.getKey(), rate);
     }
 
     List<Map.Entry<String, Double>> sortedMapRate = sortByDoubleValue(winningRate);
@@ -77,8 +73,6 @@ public class Hello {
       dealerCards.append(card.toString());
     }
 
-    // Player[] players = new Player[9];
-    // Hand[] hands = new Hand[9];
     List<SevenCards> all7CardsHand = new ArrayList<>();
     Map<SevenCards, Integer> map = new HashMap<>();
     for (int i = 0; i < 9; i++) {
