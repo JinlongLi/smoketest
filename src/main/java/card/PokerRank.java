@@ -1,6 +1,6 @@
 package card;
 
-public enum FiveCardCategory {
+public enum PokerRank {
   STRAIGHT_FLUSH(8),
   FOUR_KINDS(7),
   FULL_HOUSE(6),
@@ -17,7 +17,7 @@ public enum FiveCardCategory {
     return rank;
   }
 
-  FiveCardCategory(int rank) {
+  PokerRank(int rank) {
     this.rank = rank;
   }
 

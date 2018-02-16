@@ -93,8 +93,8 @@ public class FiveCardTest {
   }
 
   @Test(dataProvider = "fourOfKinds")
-  public void fourOfKindsTest(boolean is4OfKinds, int c1, int c2, int c3, int c4, int c5) {
-    FiveCards fiveCards = new FiveCards(c1, c2, c3, c4, c5);
+  public void fourOfKindsTest(boolean is4OfKinds, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
     if (is4OfKinds) {
       Assert.assertTrue(fiveCards.is4OfKinds());
     } else {
@@ -105,11 +105,11 @@ public class FiveCardTest {
   @DataProvider(name = "fourOfKinds")
   public Iterator<Object[]> isFourOfKindsDP() {
     List<Object[]> dp = new ArrayList<Object[]>();
-    for (int i = 0; i < 13; i++) {
-      dp.add(new Object[] { true, i, i + 1, i + 13, i + 26, i + 39 });
-      dp.add(new Object[] { false, i, i + 1, i + 13, i + 26, i + 38 });
-      dp.add(new Object[] { false, i, i + 1, i + 12, i + 26, i + 38 });
-    }
+    dp.add(new Object[] { true, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "4c", "4d", "4h", "3s", "3d" });
+    dp.add(new Object[] { true, "Tc", "Td", "Ts", "Th", "3d" });
+    dp.add(new Object[] { false, "2c", "4d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "4d", "5h", "3s", "3d" });
     return dp.iterator();
   }
 
@@ -135,6 +135,189 @@ public class FiveCardTest {
     dp.add(new Object[] { false, "2c", "4d", "2h", "3s", "3d" });
     dp.add(new Object[] { false, "2c", "4d", "5h", "3s", "3d" });
 
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasSet")
+  public void hasSetTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasSet());
+    } else {
+      Assert.assertFalse(fiveCards.hasSet());
+    }
+  }
+
+  @DataProvider(name = "hasSet")
+  public Iterator<Object[]> hasSetDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "2h", "3s", "4d" });
+    dp.add(new Object[] { true, "4c", "4d", "4h", "3s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "Th", "3d" });
+    dp.add(new Object[] { true, "Ac", "Ad", "Ks", "Ah", "3d" });
+    dp.add(new Object[] { true, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasTwoPairs")
+  public void hasTwoPairsTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasTwoPairs());
+    } else {
+      Assert.assertFalse(fiveCards.hasTwoPairs());
+    }
+  }
+
+  @DataProvider(name = "hasTwoPairs")
+  public Iterator<Object[]> hasTwoPairsDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "Ah", "3s", "3d" });
+    dp.add(new Object[] { true, "4c", "4d", "3h", "3s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "3h", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasOnePair")
+  public void hasOnePairTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasOnePair());
+    } else {
+      Assert.assertFalse(fiveCards.hasOnePair());
+    }
+  }
+
+  @DataProvider(name = "hasOnePair")
+  public Iterator<Object[]> hasOnePairDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { true, "2c", "2d", "Ah", "3s", "4d" });
+    dp.add(new Object[] { true, "4c", "4d", "3h", "6s", "5d" });
+    dp.add(new Object[] { true, "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "hasNoPair")
+  public void hasNoPairTest(boolean hasSet, String s1, String s2, String s3, String s4, String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    if (hasSet) {
+      Assert.assertTrue(fiveCards.hasNoPair());
+    } else {
+      Assert.assertFalse(fiveCards.hasNoPair());
+    }
+  }
+
+  @DataProvider(name = "hasNoPair")
+  public Iterator<Object[]> hasNoPairDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { false, "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { false, "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { false, "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { false, "Ac", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { false, "Ac", "2c", "5c", "4c", "3c" });
+    dp.add(new Object[] { false, "Ac", "2c", "8c", "4c", "Kc" });
+    dp.add(new Object[] { true, "Ac", "2c", "8s", "4c", "Kc" });
+    dp.add(new Object[] { true, "Ac", "2c", "8s", "Td", "Kc" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "compareSeq")
+  public void compareSeqTest(int expectedCat, String expectedSeq, String s1, String s2, String s3, String s4,
+      String s5) {
+    FiveCards fiveCards = new FiveCards(s1, s2, s3, s4, s5);
+    Assert.assertEquals(fiveCards.getStrCompareSeq(), expectedSeq);
+    Assert.assertEquals(fiveCards.getCategory(), expectedCat);
+  }
+
+  @DataProvider(name = "compareSeq")
+  public Iterator<Object[]> compareSeqDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "A", "Ac", "Kc", "Tc", "Jc", "Qc" });
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "5", "Ac", "2c", "5c", "4c", "3c" });
+    dp.add(new Object[] { PokerRank.FOUR_KINDS.getRank(), "23", "2c", "2d", "2h", "2s", "3d" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "23", "2c", "2d", "2h", "3s", "3d" });
+    dp.add(new Object[] { PokerRank.FLUSH.getRank(), "AK842", "Ac", "2c", "8c", "4c", "Kc" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "6", "6c", "2d", "5h", "4s", "3d" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "A", "Ac", "Kd", "Th", "Js", "Qd" });
+    dp.add(new Object[] { PokerRank.STRAIGHT.getRank(), "5", "Ac", "2c", "3h", "5d", "4s" });
+    dp.add(new Object[] { PokerRank.SET.getRank(), "3Q2", "3c", "3d", "3h", "2s", "Qd" });
+    dp.add(new Object[] { PokerRank.TWO_PAIRS.getRank(), "425", "2c", "2d", "5h", "4s", "4d" });
+    dp.add(new Object[] { PokerRank.ONE_PAIR.getRank(), "TAQ3", "Tc", "Td", "As", "Qh", "3d" });
+    dp.add(new Object[] { PokerRank.NO_PAIR.getRank(), "AK842", "Ac", "2c", "8s", "4c", "Kc" });
+    dp.add(new Object[] { PokerRank.NO_PAIR.getRank(), "AKT82", "Ac", "2c", "8s", "Td", "Kc" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "compareHand")
+  public void compareHandTest(int expected, String hand1, String hand2) {
+    FiveCards fiveCards1 = new FiveCards(hand1);
+    FiveCards fiveCards2 = new FiveCards(hand2);
+    Assert.assertEquals(fiveCards1.compareTo(fiveCards2), expected);
+  }
+
+  @DataProvider(name = "compareHand")
+  public Iterator<Object[]> compareHandDP() {
+    int winner = 1;
+    int loser = -1;
+    int tie = 0;
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { winner, "AcKcQcJcTc", "KcQcJcTc9c" });
+    dp.add(new Object[] { winner, "AcKcQcJcTc", "AcAdAhAsKc" });
+    dp.add(new Object[] { loser, "AcKcQcJc9d", "QcJc9d2c2d" });
+    dp.add(new Object[] { tie, "AcKcQcJc9d", "AcKcQcJc9d" });
+    dp.add(new Object[] { winner, "AcKcQcJc9d", "AcKcQcJc8d" });
+    dp.add(new Object[] { loser, "AcAcQcJc9d", "Qc9c9d2c2d" });
+    dp.add(new Object[] { loser, "8c8d2c2d2h", "9c9d2c2d2h" });
+    dp.add(new Object[] { loser, "AcKcQcJc9c", "9c9d2c2d2h" });
+    dp.add(new Object[] { loser, "8c9d7s5d6h", "9c9d8c8d8h" });
+    dp.add(new Object[] { loser, "8c9d7s5d6h", "8c9d7sTd6h" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "compareSeqNew")
+  public void compareSeqNewTest(int expectedCat, String expectedSeq, String s1) {
+    FiveCards fiveCards = new FiveCards(s1);
+    Assert.assertEquals(fiveCards.getStrCompareSeq(), expectedSeq);
+    Assert.assertEquals(fiveCards.getCategory(), expectedCat);
+  }
+
+  @DataProvider(name = "compareSeqNew")
+  public Iterator<Object[]> compareSeqNewDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { PokerRank.STRAIGHT_FLUSH.getRank(), "A", "AcKcQcJcTc" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "28", "8c8d2c2d2h" });
+    dp.add(new Object[] { PokerRank.FULL_HOUSE.getRank(), "29", "9c9d2c2d2h" });
+    return dp.iterator();
+  }
+
+  @Test(dataProvider = "bestFive")
+  public void bestFiveTest(int expectedCat, String expectedSeq, String s1) {
+    FiveCards fiveCards = new FiveCards(s1);
+    Assert.assertEquals(fiveCards.getStrCompareSeq(), expectedSeq);
+    Assert.assertEquals(fiveCards.getCategory(), expectedCat);
+  }
+
+  @DataProvider(name = "bestFive")
+  public Iterator<Object[]> bestFiveDP() {
+    List<Object[]> dp = new ArrayList<Object[]>();
+    dp.add(new Object[] { "AcKcQcTcTd", "AcKcQcJcTcTd9s" });
     return dp.iterator();
   }
 }
