@@ -40,22 +40,45 @@ public class Game {
     swapHoleCards(holeCards);
   }
 
+  public Game(List<HoleCards> holeCardsList, List<Card> communityCards) {
+    this.numOfPlayer = holeCardsList.size();
+    shuffle();
+    swapCards(holeCardsList, communityCards);
+  }
+
   public void findWinners() {
     this.winners = CardUtils.findWinners(holeCards, communityCards);
     System.out.println("The winner is " + winners.toString());
   }
 
   public void swapHoleCards(List<HoleCards> holeCardlist) {
-    Map<Card, Card> map = new HashMap<>();
-    int size = holeCardlist.size();
-    for (int i = 0; i < size; i++) {
-      map.put(holeCardlist.get(i).getCards().get(0), deck.get(i));
-      map.put(holeCardlist.get(i).getCards().get(1), deck.get(size + i));
-      deck.set(i, holeCardlist.get(i).getCards().get(0));
-      deck.set(size + i, holeCardlist.get(i).getCards().get(1));
+    List<Card> cards = new ArrayList<>();
+    for (int j = 0; j < 2; j++) {
+      for (int i = 0; i < holeCardlist.size(); i++) {
+        cards.add(holeCardlist.get(i).getCards().get(j));
+      }
     }
+    swapCards(cards);
+  }
 
-    for (int i = 2 * size; i < deck.size(); i++) {
+  public void swapCards(List<HoleCards> holeCardlist, List<Card> communityCards) {
+    List<Card> cards = new ArrayList<>();
+    for (int j = 0; j < 2; j++) {
+      for (int i = 0; i < holeCardlist.size(); i++) {
+        cards.add(holeCardlist.get(i).getCards().get(j));
+      }
+    }
+    cards.addAll(communityCards);
+    swapCards(cards);
+  }
+
+  public void swapCards(List<Card> cards) {
+    Map<Card, Card> map = new HashMap<>();
+    for (int i = 0; i < cards.size(); i++) {
+      map.put(cards.get(i), deck.get(i));
+      deck.set(i, cards.get(i));
+    }
+    for (int i = cards.size(); i < deck.size(); i++) {
       Card card = deck.get(i);
       if (map.containsKey(card)) {
         deck.set(i, map.get(card));
