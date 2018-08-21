@@ -36,9 +36,12 @@ public class JsonUtilsTest {
     log.info(jsonUtils.getJson().toString());
     Assert.assertEquals((double) jsonUtils.get("persons->0->height"), 1.76, DOLLAR_EPSILON);
     jsonUtils.update("persons->0->name", "AlexZ");
+    jsonUtils.update("persons->0->height", 2.55);
+    jsonUtils.update("persons->0->isStudent", false);
     log.info(jsonUtils.getJson().toString());
     Assert.assertEquals(jsonUtils.get("persons->0->name"), "AlexZ");
-    Assert.assertEquals((double) jsonUtils.get("persons->0->height"), 1.76, DOLLAR_EPSILON);
+    Assert.assertEquals((double) jsonUtils.get("persons->0->height"), 2.55, DOLLAR_EPSILON);
+    Assert.assertEquals((boolean) jsonUtils.get("persons->0->isStudent"), false);
   }
 
   @Test

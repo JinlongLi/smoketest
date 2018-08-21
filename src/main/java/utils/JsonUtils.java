@@ -34,13 +34,13 @@ public class JsonUtils {
     return obj.get(keys[keys.length - 1]);
   }
 
-  public void update(String path, String value) {
+  public <T> void update(String path, T value) {
     String[] keys = path.split("->");
     JSONObject obj = (JSONObject) getLastElement(keys);
     obj.put(keys[keys.length - 1], value);
   }
 
-  public void add(String path, String value) {
+  public <T> void add(String path, T value) {
     String[] keys = path.split("->");
     JSONObject obj = (JSONObject) getLastElement(keys);
     obj.put(keys[keys.length - 1], value);
