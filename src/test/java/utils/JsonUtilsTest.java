@@ -18,7 +18,7 @@ public class JsonUtilsTest {
     List<Person> persons = new ArrayList<>();
     persons.add(Person.builder().name("Alex").height(1.76).isStudent(true).build());
     persons.add(Person.builder().name("Bob").height(1.58).isStudent(true).build());
-    persons.add(Person.builder().name("Chad").height(1.86).isStudent(false).build());
+    persons.add(Person.builder().name("###").height(1.86).isStudent(false).build());
     Classmates classmates = new Classmates(persons);
     json = classmates.toJsonString();
   }
@@ -28,13 +28,6 @@ public class JsonUtilsTest {
   public void getValueTest() {
     Assert.assertEquals((double) new JsonUtils(json).get("persons->0->height"), 1.76,
         DOLLAR_EPSILON);
-  }
-
-  @Test
-  void iterateTest() {
-    JsonUtils jsonUtils = new JsonUtils(json);
-    jsonUtils.iterate("persons->0->height");
-    Assert.assertTrue(true);
   }
 
   @Test
@@ -57,5 +50,25 @@ public class JsonUtilsTest {
     log.info(jsonUtils.getJson().toString());
     Assert.assertEquals((String) jsonUtils.get("persons->0->age"), "60");
     Assert.assertEquals(jsonUtils.get("persons->0->name"), "Alex");
+  }
+
+  @Test
+  public void removeTest() {
+    JsonUtils jsonUtils = new JsonUtils(json);
+    log.info(jsonUtils.getJson().toString());
+    Assert.assertEquals((double) jsonUtils.get("persons->0->height"), 1.76, DOLLAR_EPSILON);
+    jsonUtils.add("persons->0->age", "60");
+    log.info("added:" + jsonUtils.getJson().toString());
+    Assert.assertEquals((String) jsonUtils.get("persons->0->age"), "60");
+    Assert.assertEquals(jsonUtils.get("persons->0->name"), "Alex");
+    jsonUtils.remove("persons->0->age");
+    log.info("removed:" + jsonUtils.getJson().toString());
+  }
+
+  @Test
+  public void findAndUpdateTest() {
+    JsonUtils jsonUtils = new JsonUtils(json);
+    jsonUtils.findAndUpdate("###");
+    log.info("modified:" + jsonUtils.getJson().toString());
   }
 }

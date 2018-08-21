@@ -1,7 +1,7 @@
 package utils;
 
 import java.util.Iterator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.RandomStringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
@@ -30,72 +30,35 @@ public class JsonUtils {
 
   public Object get(String path) {
     String[] keys = path.split("->");
-    Object json = this.json;
-    for (String key : keys) {
-      if (json == null) {
-        return null;
-      }
-      key = key.trim();
-      if (StringUtils.isNumeric(key) && (json instanceof JSONArray)) {
-        JSONArray jsonArray = (JSONArray) json;
-        int ordinal = Integer.parseInt(key);
-        if (ordinal >= 0 && ordinal < jsonArray.length()) {
-          json = jsonArray.get(ordinal);
-        } else {
-          return null;
-        }
-      } else if (json instanceof JSONObject) {
-        JSONObject jsonObject = (JSONObject) json;
-        json = jsonObject.get(key);
-      } else {
-        return null;
-      }
-    }
-    return json;
+    JSONObject obj = (JSONObject) getLastElement(keys);
+    return obj.get(keys[keys.length - 1]);
   }
 
   public void update(String path, String value) {
-    JSONObject obj = (JSONObject) this.json;
     String[] keys = path.split("->");
-    for (int i = 0; i < keys.length - 1; i++) {
-      String key = keys[i];
-      key = key.trim();
-      if (obj.optJSONArray(key) != null) {
-        JSONArray jArray = obj.getJSONArray(key);
-        key = keys[++i];
-        int ordinal = Integer.parseInt(key);
-        obj = (JSONObject) jArray.get(ordinal);
-      } else if (obj.optJSONObject(key) != null) {
-        obj = obj.getJSONObject(key);
-      }
-      log.info(obj.toString());
-    }
+    JSONObject obj = (JSONObject) getLastElement(keys);
     obj.put(keys[keys.length - 1], value);
   }
 
   public void add(String path, String value) {
-    JSONObject obj = (JSONObject) this.json;
     String[] keys = path.split("->");
-    for (int i = 0; i < keys.length - 1; i++) {
-      String key = keys[i];
-      key = key.trim();
-      if (obj.optJSONArray(key) != null) {
-        JSONArray jArray = obj.getJSONArray(key);
-        key = keys[++i];
-        int ordinal = Integer.parseInt(key);
-        obj = (JSONObject) jArray.get(ordinal);
-      } else if (obj.optJSONObject(key) != null) {
-        obj = obj.getJSONObject(key);
-      }
-      log.info(obj.toString());
-    }
+    JSONObject obj = (JSONObject) getLastElement(keys);
     obj.put(keys[keys.length - 1], value);
   }
 
-  public Object iterate(String path) {
-    JSONObject obj = (JSONObject) this.json;
+  public void remove(String path) {
     String[] keys = path.split("->");
-    for (int i = 0; i < keys.length; i++) {
+    JSONObject obj = (JSONObject) getLastElement(keys);
+    obj.remove(keys[keys.length - 1]);
+  }
+
+  public Object getLastElement(String[] keys) {
+    return getElement(keys, keys.length - 1);
+  }
+
+  public Object getElement(String[] keys, int depth) {
+    JSONObject obj = (JSONObject) this.json;
+    for (int i = 0; i < depth; i++) {
       String key = keys[i];
       key = key.trim();
       if (obj.optJSONArray(key) != null) {
@@ -105,35 +68,37 @@ public class JsonUtils {
         obj = (JSONObject) jArray.get(ordinal);
       } else if (obj.optJSONObject(key) != null) {
         obj = obj.getJSONObject(key);
-      } else {
-        return null;
       }
       log.info(obj.toString());
     }
     return obj;
   }
 
-
-  public void iterate(Object obj, String[] keys, int index) {
-    if (index == keys.length - 1) {
-
-    }
-    String key = keys[index].trim();
-    if (StringUtils.isNumeric(key) && (json instanceof JSONArray)) {
-      JSONArray jsonArray = (JSONArray) json;
-      int ordinal = Integer.parseInt(key);
-      if (ordinal >= 0 && ordinal < jsonArray.length()) {
-        iterate(jsonArray.get(ordinal), keys, index + 1);
-      }
-    } else if (json instanceof JSONObject) {
-      JSONObject jsonObject = (JSONObject) json;
-      iterate(jsonObject.get(key), keys, index + 1);
-    }
+  public void findAndUpdate(String value) {
+    findAndUpdate((JSONObject) this.json, value);
   }
 
+  public void findAndUpdate(JSONObject obj, String value) {
+    Iterator<?> iterator = obj.keys();
+    while (iterator.hasNext()) {
+      String key = (String) iterator.next();
+      if ((obj.optJSONArray(key) == null) && (obj.optJSONObject(key) == null)) {
+        if ((value.equals(obj.get(key)))) {
+          obj.put(key, RandomStringUtils.randomAlphabetic(6));
+        }
+      }
 
-  public boolean hasValue(String path) {
-    return get(path) != null;
+      if (obj.optJSONObject(key) != null) {
+        findAndUpdate(obj.getJSONObject(key), value);
+      }
+
+      if (obj.optJSONArray(key) != null) {
+        JSONArray jArray = obj.getJSONArray(key);
+        for (int i = 0; i < jArray.length(); i++) {
+          findAndUpdate(jArray.getJSONObject(i), value);
+        }
+      }
+    }
   }
 
   public static JSONObject updateJson(JSONObject obj, String keyString, String newValue)
