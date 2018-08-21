@@ -5,7 +5,11 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
+@Getter
 public class JsonUtils {
   private Object json;
 
@@ -43,12 +47,70 @@ public class JsonUtils {
       } else if (json instanceof JSONObject) {
         JSONObject jsonObject = (JSONObject) json;
         json = jsonObject.get(key);
-        jsonObject.put(key, 100.00);
       } else {
         return null;
       }
     }
     return json;
+  }
+
+  public void update(String path, String value) {
+    JSONObject obj = (JSONObject) this.json;
+    String[] keys = path.split("->");
+    for (int i = 0; i < keys.length - 1; i++) {
+      String key = keys[i];
+      key = key.trim();
+      if (obj.optJSONArray(key) != null) {
+        JSONArray jArray = obj.getJSONArray(key);
+        key = keys[++i];
+        int ordinal = Integer.parseInt(key);
+        obj = (JSONObject) jArray.get(ordinal);
+      } else if (obj.optJSONObject(key) != null) {
+        obj = obj.getJSONObject(key);
+      }
+      log.info(obj.toString());
+    }
+    obj.put(keys[keys.length - 1], value);
+  }
+
+  public void add(String path, String value) {
+    JSONObject obj = (JSONObject) this.json;
+    String[] keys = path.split("->");
+    for (int i = 0; i < keys.length - 1; i++) {
+      String key = keys[i];
+      key = key.trim();
+      if (obj.optJSONArray(key) != null) {
+        JSONArray jArray = obj.getJSONArray(key);
+        key = keys[++i];
+        int ordinal = Integer.parseInt(key);
+        obj = (JSONObject) jArray.get(ordinal);
+      } else if (obj.optJSONObject(key) != null) {
+        obj = obj.getJSONObject(key);
+      }
+      log.info(obj.toString());
+    }
+    obj.put(keys[keys.length - 1], value);
+  }
+
+  public Object iterate(String path) {
+    JSONObject obj = (JSONObject) this.json;
+    String[] keys = path.split("->");
+    for (int i = 0; i < keys.length; i++) {
+      String key = keys[i];
+      key = key.trim();
+      if (obj.optJSONArray(key) != null) {
+        JSONArray jArray = obj.getJSONArray(key);
+        key = keys[++i];
+        int ordinal = Integer.parseInt(key);
+        obj = (JSONObject) jArray.get(ordinal);
+      } else if (obj.optJSONObject(key) != null) {
+        obj = obj.getJSONObject(key);
+      } else {
+        return null;
+      }
+      log.info(obj.toString());
+    }
+    return obj;
   }
 
 
